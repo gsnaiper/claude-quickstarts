@@ -12,17 +12,31 @@ This Dev Container configuration provides a complete development environment for
 
 ## OAuth Token Setup
 
+### Quick Setup with Claude Code
+
+For automated setup with `CLAUDE_CODE_OAUTH_TOKEN`:
+
+```bash
+# From the repository root
+export CLAUDE_CODE_OAUTH_TOKEN="your-token-here"
+./scripts/setup-devcontainer-oauth.sh
+```
+
+See [CLAUDE_CODE_INTEGRATION.md](../../CLAUDE_CODE_INTEGRATION.md) for full Claude Code integration details.
+
 ### Method 1: GitHub Codespaces Secrets (Recommended for Codespaces)
 
 1. Go to your GitHub profile → Settings → Codespaces → Secrets
-2. Add `ANTHROPIC_API_KEY` with your Claude API key
-3. The container will automatically load these secrets
+2. Add `CLAUDE_CODE_OAUTH_TOKEN` for Claude Code integration
+3. Add `ANTHROPIC_API_KEY` with your Claude API key
+4. The container will automatically load these secrets
 
 ### Method 2: Local Environment Variables
 
 Set environment variables in your local shell before opening the Dev Container:
 
 ```bash
+export CLAUDE_CODE_OAUTH_TOKEN="your-token-here"
 export ANTHROPIC_API_KEY="your-api-key-here"
 ```
 
@@ -32,6 +46,7 @@ The `remoteEnv` configuration will automatically pass these to the container.
 
 1. Create a `.env.local` file in the financial-data-analyst directory:
 ```
+CLAUDE_CODE_OAUTH_TOKEN=your-token-here
 ANTHROPIC_API_KEY=your-api-key-here
 ```
 

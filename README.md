@@ -60,7 +60,24 @@ All quickstart projects include **Dev Container** configurations for a seamless 
 2. Click **Code** → **Codespaces** → **Create codespace** on this repository
 3. Start coding immediately in your browser!
 
-📖 **Full Guide**: See [DEVCONTAINER_GUIDE.md](./DEVCONTAINER_GUIDE.md) for detailed instructions on OAuth token management, troubleshooting, and advanced use cases.
+📖 **Full Guides**:
+- [DEVCONTAINER_GUIDE.md](./DEVCONTAINER_GUIDE.md) - Comprehensive Dev Container setup and OAuth token management
+- [CLAUDE_CODE_INTEGRATION.md](./CLAUDE_CODE_INTEGRATION.md) - Claude Code integration with `CLAUDE_CODE_OAUTH_TOKEN`
+
+### Automated Setup Scripts
+
+For quick setup with Claude Code OAuth tokens:
+
+```bash
+# 1. Set your Claude Code OAuth token
+export CLAUDE_CODE_OAUTH_TOKEN="your-token-here"
+
+# 2. Run the automated setup
+./scripts/setup-devcontainer-oauth.sh
+
+# 3. Validate your configuration
+./scripts/validate-oauth-setup.sh
+```
 
 ## Explore Further
 

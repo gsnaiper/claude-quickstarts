@@ -76,6 +76,7 @@
   // 3. Pass via docker run -e flag
   // 4. Use remoteEnv to reference local environment variables
   "remoteEnv": {
+    "CLAUDE_CODE_OAUTH_TOKEN": "${localEnv:CLAUDE_CODE_OAUTH_TOKEN}",
     "ANTHROPIC_API_KEY": "${localEnv:ANTHROPIC_API_KEY}",
     "API_PROVIDER": "${localEnv:API_PROVIDER:-anthropic}",
     "WIDTH": "${localEnv:WIDTH:-1024}",
