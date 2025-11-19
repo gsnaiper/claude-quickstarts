@@ -64,6 +64,16 @@ All quickstart projects include **Dev Container** configurations for a seamless 
 - [DEVCONTAINER_GUIDE.md](./DEVCONTAINER_GUIDE.md) - Comprehensive Dev Container setup and OAuth token management
 - [CLAUDE_CODE_INTEGRATION.md](./CLAUDE_CODE_INTEGRATION.md) - Claude Code integration with `CLAUDE_CODE_OAUTH_TOKEN`
 
+### Claude Code Skills
+
+This repository includes a **DevContainer Manager skill** for Claude Code that provides expert assistance with:
+- Dev Container setup and configuration
+- OAuth token management
+- Daily workflows and troubleshooting
+- Security best practices
+
+See [.claude/README.md](./.claude/README.md) for details on using Claude Code skills.
+
 ### Automated Setup Scripts
 
 For quick setup with Claude Code OAuth tokens:
