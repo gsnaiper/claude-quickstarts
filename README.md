@@ -36,6 +36,59 @@ Each quickstart project comes with its own README and setup instructions. Genera
 4. Set up your Claude API key as an environment variable
 5. Run the quickstart application
 
+## Dev Container Support
+
+All quickstart projects include **Dev Container** configurations for a seamless development experience with secure OAuth token management. Dev Containers provide:
+
+- ✨ **Pre-configured environments** with all dependencies installed
+- 🔐 **Secure OAuth token and API key management** (never commit secrets!)
+- 🛠️ **VS Code extensions** tailored for each tech stack
+- 🚀 **One-click setup** in VS Code or GitHub Codespaces
+- 🔄 **Consistent development** across different machines
+
+### Quick Start with Dev Containers
+
+**Option 1: VS Code + Docker Desktop**
+1. Install [VS Code](https://code.visualstudio.com) and [Docker Desktop](https://www.docker.com/products/docker-desktop)
+2. Install the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+3. Set up your API key (see [DEVCONTAINER_GUIDE.md](./DEVCONTAINER_GUIDE.md))
+4. Open any project folder in VS Code
+5. Click "Reopen in Container" when prompted
+
+**Option 2: GitHub Codespaces**
+1. Add your `ANTHROPIC_API_KEY` to [GitHub Codespaces Secrets](https://github.com/settings/codespaces)
+2. Click **Code** → **Codespaces** → **Create codespace** on this repository
+3. Start coding immediately in your browser!
+
+📖 **Full Guides**:
+- [DEVCONTAINER_GUIDE.md](./DEVCONTAINER_GUIDE.md) - Comprehensive Dev Container setup and OAuth token management
+- [CLAUDE_CODE_INTEGRATION.md](./CLAUDE_CODE_INTEGRATION.md) - Claude Code integration with `CLAUDE_CODE_OAUTH_TOKEN`
+
+### Claude Code Skills
+
+This repository includes a **DevContainer Manager skill** for Claude Code that provides expert assistance with:
+- Dev Container setup and configuration
+- OAuth token management
+- Daily workflows and troubleshooting
+- Security best practices
+
+See [.claude/README.md](./.claude/README.md) for details on using Claude Code skills.
+
+### Automated Setup Scripts
+
+For quick setup with Claude Code OAuth tokens:
+
+```bash
+# 1. Set your Claude Code OAuth token
+export CLAUDE_CODE_OAUTH_TOKEN="your-token-here"
+
+# 2. Run the automated setup
+./scripts/setup-devcontainer-oauth.sh
+
+# 3. Validate your configuration
+./scripts/validate-oauth-setup.sh
+```
+
 ## Explore Further
 
 To deepen your understanding of working with Claude and the Claude API, check out these resources:
