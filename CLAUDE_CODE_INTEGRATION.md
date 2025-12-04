@@ -414,6 +414,7 @@ HEIGHT=768
 
 - [Claude Code Documentation](https://docs.claude.com/en/docs/claude-code)
 - [DEVCONTAINER_GUIDE.md](./DEVCONTAINER_GUIDE.md) - Comprehensive Dev Container guide
+- [CLAUDE_CODE_OAUTH_ADVANCED.md](./CLAUDE_CODE_OAUTH_ADVANCED.md) - **Advanced OAuth token management, CI/CD, headless environments**
 - [Dev Containers Documentation](https://containers.dev)
 - [GitHub Codespaces Secrets](https://docs.github.com/en/codespaces/managing-your-codespaces/managing-secrets-for-your-codespaces)
 - [Anthropic API Documentation](https://docs.anthropic.com)

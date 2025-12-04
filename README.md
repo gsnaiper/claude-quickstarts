@@ -63,6 +63,7 @@ All quickstart projects include **Dev Container** configurations for a seamless 
 📖 **Full Guides**:
 - [DEVCONTAINER_GUIDE.md](./DEVCONTAINER_GUIDE.md) - Comprehensive Dev Container setup and OAuth token management
 - [CLAUDE_CODE_INTEGRATION.md](./CLAUDE_CODE_INTEGRATION.md) - Claude Code integration with `CLAUDE_CODE_OAUTH_TOKEN`
+- [CLAUDE_CODE_OAUTH_ADVANCED.md](./CLAUDE_CODE_OAUTH_ADVANCED.md) - Advanced OAuth token management, CI/CD, headless environments
 
 ### Claude Code Skills
 

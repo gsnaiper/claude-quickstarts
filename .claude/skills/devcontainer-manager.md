@@ -199,6 +199,230 @@ export CLAUDE_CODE_OAUTH_TOKEN="your-token-here"
 
 **Use Case**: Quick setup, new developers
 
+### Advanced OAuth Token Knowledge
+
+#### Generating OAuth Token for Headless Environments
+
+For CI/CD, Docker containers, and automated environments, generate a token once:
+
+```bash
+# On a machine with browser access
+claude setup-token
+```
+
+Output example:
+```
+Your token:
+eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+
+This OAuth bearer token can be reused in headless environments via `CLAUDE_CODE_OAUTH_TOKEN`.
+
+#### Token Structure and Storage
+
+When logged in interactively, tokens are stored in `~/.claude/.credentials.json`:
+
+```json
+{
+  "claudeAiOauth": {
+    "accessToken": "sk-ant-oat01-...",
+    "refreshToken": "sk-ant-ort01-...",
+    "expiresAt": 1754418735285,
+    "scopes": ["user:inference", "user:profile"],
+    "subscriptionType": "pro"
+  }
+}
+```
+
+**Components**:
+- **accessToken**: Short-lived bearer token for API requests
+- **refreshToken**: Long-lived token to obtain new access tokens
+- **expiresAt**: Unix timestamp when access token expires
+- **scopes**: Permissions granted (inference, profile, etc.)
+- **subscriptionType**: Account type (pro, max, api)
+
+#### Headless Environment Variables
+
+```bash
+# Primary OAuth token (recommended)
+export CLAUDE_CODE_OAUTH_TOKEN="eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
+
+# Skip interactive setup prompts (required for CI/CD)
+export CLAUDE_CODE_BYPASS_ONBOARDING="1"
+
+# Alternative token variable (less common)
+export ANTHROPIC_AUTH_TOKEN="eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+#### Token Expiration and Rotation
+
+**Key Facts**:
+- OAuth tokens are **not permanent** - they expire (typically days to weeks)
+- Access token: short-lived (hours to days)
+- Refresh token: longer-lived (weeks to months)
+- When expired: HTTP 401 errors, authentication failures
+
+**Rotation Strategy**:
+```bash
+# Method 1: Manual rotation (weekly recommended)
+1. claude setup-token
+2. Copy new token
+3. Update in all locations (CI secrets, .env files, etc.)
+4. Restart services
+
+# Method 2: Automated script
+./scripts/rotate-claude-token.sh
+
+# Method 3: Check expiration before use
+./scripts/check-token-expiration.sh || {
+  echo "Token expired - please rotate"
+  exit 1
+}
+```
+
+**Monitoring Token Expiration**:
+```bash
+# Decode JWT token to check expiration
+TOKEN="$CLAUDE_CODE_OAUTH_TOKEN"
+PAYLOAD=$(echo $TOKEN | cut -d. -f2 | base64 -d 2>/dev/null)
+EXPIRY=$(echo $PAYLOAD | jq -r '.exp')
+CURRENT=$(date +%s)
+
+if [ $CURRENT -gt $EXPIRY ]; then
+  echo "Token expired!"
+else
+  echo "Token valid until $(date -d @$EXPIRY)"
+fi
+```
+
+#### Advanced Configuration: apiKeyHelper
+
+For automatic token refresh, use `apiKeyHelper` in `~/.claude/settings.json`:
+
+```json
+{
+  "apiKeyHelper": "/path/to/get-token.sh"
+}
+```
+
+**get-token.sh** example:
+```bash
+#!/bin/bash
+# Dynamically fetch token from secrets manager or check expiration
+
+if check-token-expiration.sh; then
+  echo "$CLAUDE_CODE_OAUTH_TOKEN"
+else
+  # Fetch fresh token from AWS Secrets Manager, Vault, etc.
+  aws secretsmanager get-secret-value \
+    --secret-id claude-code-oauth-token \
+    --query SecretString --output text
+fi
+```
+
+**Environment variable**:
+```bash
+# Control refresh frequency (milliseconds)
+export CLAUDE_CODE_API_KEY_HELPER_TTL_MS=300000  # 5 minutes
+```
+
+Claude Code will call this script every 5 minutes (or on 401 errors) to get a fresh token.
+
+#### Known Issues and Workarounds
+
+**Issue 1**: Token not recognized on first run (GitHub Issue #8938)
+- **Status**: Known bug, being fixed by Anthropic
+- **Workaround**: Set `CLAUDE_CODE_BYPASS_ONBOARDING=1` + complete setup once interactively
+- **Alternative**: Mount pre-configured `~/.claude` directory
+
+**Issue 2**: Token expired mid-session
+- **Solution**: Implement token expiration checks before long-running tasks
+- **CI/CD**: Add validation step: `./scripts/check-token-expiration.sh`
+
+**Issue 3**: Token works locally but not in CI
+- **Checklist**:
+  1. Verify token in CI secrets (no extra whitespace)
+  2. Set `CLAUDE_CODE_BYPASS_ONBOARDING=1`
+  3. Check internet access to api.anthropic.com
+  4. Verify token hasn't expired
+
+#### Authentication Methods Comparison
+
+**Claude Console (API Account)**:
+- Uses console.anthropic.com OAuth
+- Creates dedicated "Claude Code" workspace
+- No exposed API keys - all through OAuth
+- For organizations with billing
+
+**Claude App (Pro/Max Subscription)**:
+- Uses claude.ai account OAuth
+- Unified billing with web app
+- No direct API key - only OAuth token
+- For individual Pro/Max subscribers
+
+**Key Difference**: Pro/Max users don't have traditional API keys. They use OAuth tokens obtained via `claude setup-token` or interactive login.
+
+#### CI/CD Integration Examples
+
+**GitHub Actions**:
+```yaml
+env:
+  CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+  CLAUDE_CODE_BYPASS_ONBOARDING: '1'
+steps:
+  - name: Validate Token
+    run: ./scripts/check-token-expiration.sh
+  - name: Run Claude Code
+    run: claude -p "Analyze code"
+```
+
+**Docker**:
+```yaml
+services:
+  claude-dev:
+    environment:
+      - CLAUDE_CODE_OAUTH_TOKEN=${CLAUDE_CODE_OAUTH_TOKEN}
+      - CLAUDE_CODE_BYPASS_ONBOARDING=1
+```
+
+**devcontainer.json**:
+```json
+{
+  "remoteEnv": {
+    "CLAUDE_CODE_OAUTH_TOKEN": "${localEnv:CLAUDE_CODE_OAUTH_TOKEN}",
+    "CLAUDE_CODE_BYPASS_ONBOARDING": "1"
+  }
+}
+```
+
+#### Security Best Practices for OAuth Tokens
+
+**DO**:
+- ✅ Generate token via `claude setup-token` on secure machine
+- ✅ Store in encrypted secrets (GitHub Secrets, AWS Secrets Manager, Vault)
+- ✅ Rotate monthly (recommended)
+- ✅ Monitor expiration with automated checks
+- ✅ Use separate tokens for dev/staging/prod
+- ✅ Revoke immediately if compromised (change password + regenerate)
+
+**DON'T**:
+- ❌ Commit tokens to git
+- ❌ Log token values in CI output
+- ❌ Share tokens between unrelated teams/projects
+- ❌ Use production tokens in development
+- ❌ Store in plain text files
+- ❌ Expose in error messages or stack traces
+
+#### Token Revocation
+
+If token is compromised:
+1. Generate new token: `claude setup-token`
+2. Update all locations (CI secrets, .env files, containers)
+3. For immediate revocation, change password on console.anthropic.com or claude.ai
+4. Old token becomes invalid after expiration or password change
+
+**For complete advanced OAuth token documentation**, see [CLAUDE_CODE_OAUTH_ADVANCED.md](../../CLAUDE_CODE_OAUTH_ADVANCED.md).
+
 ## Daily Workflows
 
 ### Morning Setup
